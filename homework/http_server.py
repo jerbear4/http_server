@@ -1,5 +1,7 @@
 import socket
 import sys
+import os
+import mimetypes
 
 
 def response_ok(body=b"this is a pretty minimal response", mimetype=b"text/plain"):
@@ -8,7 +10,8 @@ def response_ok(body=b"this is a pretty minimal response", mimetype=b"text/plain
     resp.append(b"HTTP/1.1 200 OK")
     resp.append(b"Content-Type: text/plain")
     resp.append(b"")
-    resp.append(b"this is a pretty minimal response")
+    resp.append(body)
+    # resp.append(b"this is a pretty minimal response")
     return b"\r\n".join(resp)
 
 
@@ -35,7 +38,23 @@ def parse_request(request):
 
 def resolve_uri(uri):
     """This method should return appropriate content and a mime type"""
-    return b"still broken", b"text/plain"
+    dir_root = os.getcwd()
+    print('dir_root:', dir_root)
+    print('uri:', uri)
+    try:
+        dir_list = os.listdir(dir_root + uri)
+        file_names = "\r\n".join(dir_list)
+        # file_names = join("\r\n").dir_list
+        # for file in dir_list:
+        #     mime = mimetypes.guess_type(file)
+        print('dir_list:', dir_list)
+        # print('files:', files)
+    except FileNotFoundError:
+        print("file not found")
+
+    return file_names.encode('utf8'), b"text/plain"
+
+    # return b"still broken", b"text/plain"
 
 
 def server(log_buffer=sys.stderr):
